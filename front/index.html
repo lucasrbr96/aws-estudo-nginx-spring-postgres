@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mural de Mensagens</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #f0f2f5;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      width: 100%;
+      max-width: 600px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    h1 {
+      margin-top: 0;
+    }
+
+    .button {
+      display: inline-block;
+      background-color: #4caf50;
+      color: white;
+      padding: 10px 20px;
+      margin-bottom: 20px;
+      text-decoration: none;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+
+    #messages {
+      text-align: left;
+    }
+
+    .message {
+      background: #f9f9f9;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    .name {
+      font-weight: bold;
+      color: #333;
+    }
+
+    .content {
+      margin-top: 4px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Mural de Mensagens</h1>
+
+  <a href="add.html" class="button">+ Nova Mensagem</a>
+
+  <div id="messages">Carregando mensagens...</div>
+</div>
+
+<script>
+  const API_BASE_URL = '/mural';
+
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  async function loadMessages() {
+    try {
+      const res = await fetch(`${API_BASE_URL}`);
+      const messages = await res.json();
+      const container = document.getElementById('messages');
+      if (messages.length === 0) {
+        container.innerHTML = '<p>Nenhuma mensagem ainda.</p>';
+        return;
+      }
+
+      container.innerHTML = '';
+      messages.forEach(msg => {
+        const div = document.createElement('div');
+        div.className = 'message';
+        const name = msg.name ? msg.name : 'Anônimo';
+        div.innerHTML = `
+          <div class="name">${name}</div>
+          <div class="content">${escapeHtml(msg.message)}</div>
+        `;
+        container.appendChild(div);
+      });
+    } catch (err) {
+      document.getElementById('messages').innerHTML = '<p style="color:red;">Erro ao carregar mensagens.</p>';
+    }
+  }
+
+  loadMessages();
+</script>
+
+</body>
+</html>

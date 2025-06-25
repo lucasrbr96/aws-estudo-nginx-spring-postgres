@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Nova Mensagem</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <h1>Nova Mensagem</h1>
+
+  <a href="index.html" class="button">← Voltar</a>
+
+  <form id="messageForm">
+    <input type="text" id="name" placeholder="Seu nome (opcional)" maxlength="100" />
+    <textarea id="content" placeholder="Digite sua mensagem..." required maxlength="500"></textarea>
+    <button type="submit">Enviar Mensagem</button>
+    <div id="error" class="error"></div>
+  </form>
+
+  <script>
+    const API_BASE_URL = '/mural';
+
+    document.getElementById('messageForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      const message = document.getElementById('content').value.trim();
+      const errorDiv = document.getElementById('error');
+
+      if (!content) {
+        errorDiv.textContent = 'A mensagem não pode ser vazia.';
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE_URL}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, message })
+        });
+
+        if (!res.ok) {
+          throw new Error('Erro ao enviar mensagem');
+        }
+
+        // Após sucesso, volta para index.html
+        window.location.href = 'index.html';
+      } catch (err) {
+        errorDiv.textContent = err.message;
+      }
+    });
+  </script>
+
+</body>
+</html>
